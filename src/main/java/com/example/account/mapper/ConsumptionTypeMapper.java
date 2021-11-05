@@ -2,9 +2,12 @@ package com.example.account.mapper;
 
 import com.example.account.entity.ConsumptionType;
 import com.example.account.entity.ConsumptionTypeExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface ConsumptionTypeMapper {
     int countByExample(ConsumptionTypeExample example);
 
@@ -18,6 +21,10 @@ public interface ConsumptionTypeMapper {
 
     //按名字查
     ConsumptionType selectByName(String name);
+
+    //按houseId查
+    List<ConsumptionType> selectByHouseId(Integer houseId);
+
     List<ConsumptionType> selectByExample(ConsumptionTypeExample example);
 
     ConsumptionType selectByPrimaryKey(Integer id);

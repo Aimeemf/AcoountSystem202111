@@ -9,8 +9,8 @@ import lombok.Data;
 @Data
 public class UpdateConsumptionTypeParam extends ConsumptionTypeParam{
 
-    //旧名字
-    private String oldName;
+    //标签id
+    private Integer id;
 
     //新名字
     private String newName;

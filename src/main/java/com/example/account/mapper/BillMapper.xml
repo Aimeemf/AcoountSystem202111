@@ -152,16 +152,15 @@
            <if test="recordId != null" >
               AND user_id = #{recordId}
            </if>
-           <if test="recordTime != null" >
+           <if test="recordDate != null" >
              AND record_time &gt;= #{recordDate}
            </if>
            <if test="beginTime != null" >
              AND record_time &gt;= #{beginTime}
            </if>
            <if test="endTime != null" >
-              AND record_time &lt; #{endTime}
+              AND record_time &lt;= #{endTime}
            </if>
-           group by null
   </select>
 
   <select id="selectBillTotalMoneyByType" parameterType="com.example.account.param.BillManageParam" resultType="com.example.account.dto.StatisticsByTypeDTO">

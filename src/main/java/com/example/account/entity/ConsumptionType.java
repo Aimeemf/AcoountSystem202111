@@ -16,7 +16,7 @@ public class ConsumptionType implements Serializable {
 
     private Integer isCustom;
 
-    private Integer isDelete;
+    private int isDelete;
 
     private static final long serialVersionUID = 1L;
 

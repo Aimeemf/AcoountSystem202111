@@ -7,10 +7,10 @@ import com.example.account.param.ConsumptionTypeParam;
 import com.example.account.param.UpdateConsumptionTypeParam;
 import com.example.account.response.Result;
 import com.example.account.service.ConsumptionTypeService;
-import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,10 +24,10 @@ public class ConsumptionTypeServiceImpl implements ConsumptionTypeService {
     private ConsumptionTypeMapper consumptionTypeMapper;
 
     @Override
-    public Result queryConsumptionType() {
+    public Result queryConsumptionType(ConsumptionTypeParam param) {
 
-            List<ConsumptionType> list = consumptionTypeMapper.selectByExample(null);
-            return Result.success(list);
+        List<ConsumptionType> list = consumptionTypeMapper.selectByHouseId(param.getHouseId());
+        return Result.success(list);
     }
 
 
@@ -41,12 +41,14 @@ public class ConsumptionTypeServiceImpl implements ConsumptionTypeService {
             return Result.failure(ReturnCode.ADD_CONSUMTYPE_FAIL);
         }
 
+        Date date = new Date();
         record.setName(param.getName());
         record.setHouseId(param.getHouseId());
         record.setIsCustom(1);
-
+        record.setCreateTime(date);
+        record.setUpdateTime(date);
         try {
-            consumptionTypeMapper.insertSelective(record);
+            consumptionTypeMapper.insert(record);
             return Result.success(record);
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,12 +59,19 @@ public class ConsumptionTypeServiceImpl implements ConsumptionTypeService {
     @Override
     public Result updateConsumptionType(UpdateConsumptionTypeParam param) {
 
-        if(param.getIsCustom() == 0){
+        ConsumptionType record = consumptionTypeMapper.selectByPrimaryKey(param.getId());
+        if(record.getIsCustom() == 0 || null == record){
             return Result.failure(ReturnCode.UPDATE_CONSUMTYPE_FAIL);
         }
 
-        ConsumptionType record = consumptionTypeMapper.selectByName(param.getOldName());
+        ConsumptionType consumptionType = consumptionTypeMapper.selectByName(param.getNewName());
+        if(null != consumptionType){
+            //避免修改的类型与其他类型重名
+            Result.failure(ReturnCode.ADD_CONSUMTYPE_FAIL);
+        }
+
         record.setName(param.getNewName());
+        record.setUpdateTime(new Date());
         consumptionTypeMapper.updateByPrimaryKeySelective(record);
 
         return Result.success(record);
@@ -70,14 +79,18 @@ public class ConsumptionTypeServiceImpl implements ConsumptionTypeService {
 
     @Override
     public Result deleteConsumptionType(ConsumptionTypeParam param) {
+        ConsumptionType record = consumptionTypeMapper.selectByPrimaryKey(param.getId());
+        if(record.getIsCustom() == 0 || null == record){
+            return Result.failure(ReturnCode.DELETE_CONSUMTYPE_FAIL);
+        }
 
+        record.setIsDelete(1);
         try {
-            consumptionTypeMapper.deleteByPrimaryKey(param.getId());
+            consumptionTypeMapper.updateByPrimaryKeySelective(record);
             return Result.success();
         } catch (Exception e) {
             e.printStackTrace();
             return Result.failure(ReturnCode.DELETE_CONSUMTYPE_FAIL);
         }
-
     }
 }

@@ -16,7 +16,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,6 +34,11 @@ public class BillStatisticsServiceImpl implements BillStatisticsService {
 
     @Override
     public Result statisticsByTime(BillManageParam param) {
+        boolean isAdmin = userService.isAdmin(param.getUserId());
+        if(isAdmin){
+            //管理员默认展示家庭总账单
+            param.setUserId(null);
+        }
         BillStatisticsDTO dto = new BillStatisticsDTO();
         if (param.getTimeType() == 1) {
             House house = houseMapper.selectByPrimaryKey(param.getHouseId());
@@ -67,7 +71,7 @@ public class BillStatisticsServiceImpl implements BillStatisticsService {
      */
     private BillManageParam convertParam(BillManageParam param) {
         boolean isAdmin = userService.isAdmin(param.getUserId());
-        if (isAdmin) {
+        if(isAdmin && !param.isOnlySelf()){
             param.setUserId(null);
         }
 
@@ -92,14 +96,20 @@ public class BillStatisticsServiceImpl implements BillStatisticsService {
                 param.setEndTime(DateUtil.stringToDate(param.getEndDate(), DateUtil.fullDayFormat));
             }
         }
-        param.setRecordDate(day);
+        param.setBeginTime(day);
         return param;
     }
 
     @Override
     public Result statisticsTypeByTime(BillManageParam param) {
+        boolean isAdmin = userService.isAdmin(param.getUserId());
+        if(isAdmin && !param.isOnlySelf()){
+            //管理员默认展示家庭总账单
+            param.setUserId(null);
+        }
         //转换入参
         BillManageParam manageParam = convertParam(param);
+        manageParam.setEndTime(DateUtils.addDays(DateUtil.getToday(), 1));
         //统计各个类型的花费
         List<StatisticsByTypeDTO> list = billMapper.selectBillTotalMoneyByType(manageParam);
         return Result.success(list);
@@ -107,6 +117,11 @@ public class BillStatisticsServiceImpl implements BillStatisticsService {
 
     @Override
     public Result statisticsLineChartByTime(BillManageParam param) {
+        boolean isAdmin = userService.isAdmin(param.getUserId());
+        if(isAdmin && !param.isOnlySelf()){
+            //管理员默认展示家庭总账单
+            param.setUserId(null);
+        }
         //时间list
         List<String> dateList = new ArrayList<>();
         //收入list
@@ -114,10 +129,10 @@ public class BillStatisticsServiceImpl implements BillStatisticsService {
         //支出
         List<Float> expendList = new ArrayList<>();
 
-        Date today = DateUtil.getToday();
         BillManageParam manageParam = convertParam(param);
-        Date sDate = DateUtil.stringToDate(manageParam.getRecordTime(), DateUtil.fullDayFormat); //开始日期
-        Date eDate = today; //结束日期
+        Date sDate =  param.getBeginTime();//开始日期
+        Date eDate = DateUtils.addDays(DateUtil.getToday(), 1);
+
         //获取数据
         setBillMoney(manageParam, sDate, eDate, dateList, incomeList, expendList);
         //返回数据
@@ -129,6 +144,9 @@ public class BillStatisticsServiceImpl implements BillStatisticsService {
     }
 
     private void setBillMoney(BillManageParam param, Date sDate, Date eDate, List<String> dateList, List<Float> incomeList, List<Float> expendList) {
+        if(param.getTimeType() != 1){
+            sDate = DateUtils.addDays(sDate, 1);
+        }
         while (!DateUtils.isSameDay(sDate, eDate)) {
             param.setBeginTime(sDate);
             Calendar cal = Calendar.getInstance();

@@ -13,7 +13,7 @@ import com.example.account.response.Result;
 public interface ConsumptionTypeService {
 
     //查询所有消费类型
-    Result queryConsumptionType();
+    Result queryConsumptionType(ConsumptionTypeParam param);
 
     //增加消费类型
     Result addConsumptionType(ConsumptionTypeParam param);

@@ -56,6 +56,9 @@ public class DateUtil {
     }
 
     public static Date stringToDate(String str, String format) {
+        if(str == null){
+            return null;
+        }
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);//注意月份是MM
         try {

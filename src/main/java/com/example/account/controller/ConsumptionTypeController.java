@@ -27,21 +27,21 @@ public class ConsumptionTypeController {
 
     //查询所有消费类型
     @GetMapping("/consumptionType/query")
-    public Result queryConsumptionType(@RequestBody ConsumptionTypeParam param){
+    public Result queryConsumptionType(ConsumptionTypeParam param){
 
-            return consumptionTypeService.queryConsumptionType();
+        return consumptionTypeService.queryConsumptionType(param);
 
     }
 
     //修改类型名称
-    @PutMapping("consumptionType/updateName")
+    @PutMapping("/consumptionType/updateName")
     public Result updateName(@RequestBody UpdateConsumptionTypeParam param){
 
         return consumptionTypeService.updateConsumptionType(param);
     }
 
     //删除类型
-    @DeleteMapping("consumptionType/deleteType")
+    @PutMapping("/consumptionType/deleteType")
     public Result deleteType(@RequestBody ConsumptionTypeParam param){
 
         return consumptionTypeService.deleteConsumptionType(param);

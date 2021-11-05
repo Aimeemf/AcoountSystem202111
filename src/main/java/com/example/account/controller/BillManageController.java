@@ -6,17 +6,10 @@ import com.example.account.service.BillManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-
 @RestController
 public class BillManageController {
     @Autowired
     private BillManageService billManageService;
-
-    @RequestMapping("/getPdf")
-    public void showPdf(HttpServletResponse response) {
-
-    }
 
     @PostMapping("/bill/add")
     public Result addBill(@RequestBody BillManageParam param){

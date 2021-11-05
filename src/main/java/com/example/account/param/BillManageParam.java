@@ -17,6 +17,11 @@ public class BillManageParam extends BasePageParam{
     private Integer userId;
 
     /**
+     * 管理员是否只看自己的账单，1是，0否
+     */
+    private boolean onlySelf;
+
+    /**
      * 记账人Id（条件筛选使用）
      */
     private Integer recordId;

@@ -37,9 +37,6 @@ public class BillManageServiceImpl implements BillManageService {
     @Override
     public Result addBill(BillManageParam param) {
         Date date = new Date();
-        if(param.getRecordTime() != null){
-            date = DateUtil.stringToDate(param.getRecordTime(), DateUtil.fullDayFormat);
-        }
         //新增消费账单
         Bill record = new Bill();
         record.setConsumptionId(param.getConsumptionId());
@@ -47,7 +44,7 @@ public class BillManageServiceImpl implements BillManageService {
         record.setHouseId(param.getHouseId());
         record.setMoney(param.getMoney());
         record.setRemark(param.getRemark());
-        record.setRecordTime(date);
+        record.setRecordTime(param.getRecordTime() == null ? date : DateUtil.stringToDate(param.getRecordTime(), DateUtil.fullDayFormat));
         record.setBillType(param.getBillType());
         record.setCreateTime(date);
         record.setUpdateTime(date);
